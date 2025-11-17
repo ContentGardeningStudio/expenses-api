@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 from expenses_api.database import engine, Base
 from sqlalchemy.orm import Session
+from .deps import get_session
 
 
 @asynccontextmanager

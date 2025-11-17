@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Numeric, f
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
 from sqlalchemy.sql import expression
-
-Base = declarative_base()
+from .database import Base
 
 
 class Category(Base):
