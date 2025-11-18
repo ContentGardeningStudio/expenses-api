@@ -18,7 +18,6 @@ class ExpenseCreate(BaseModel):
     category_id: int
     amount: condecimal(max_digits=12, decimal_places=2)
     currency: constr(min_length=3, max_length=3)
-    occurred_at: datetime
     note: Optional[str] = None
 
 

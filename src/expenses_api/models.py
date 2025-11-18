@@ -21,7 +21,6 @@ class Expense(Base):
         "categories.id", ondelete="RESTRICT"), nullable=False)
     amount = Column(Numeric(12, 2), nullable=False)
     currency = Column(String(3), nullable=False)
-    occurred_at = Column(DateTime(timezone=True), nullable=False)
     note = Column(String(500), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True),
