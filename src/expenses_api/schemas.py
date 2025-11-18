@@ -11,9 +11,7 @@ class CategoryOut(BaseModel):
     id: int
     name: str
     created_at: datetime
-
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 class ExpenseCreate(BaseModel):
@@ -28,6 +26,12 @@ class ExpenseOut(ExpenseCreate):
     id: int
     created_at: datetime
     updated_at: datetime
+    model_config = {"from_attributes": True}
 
-    class Config:
-        orm_mode = True
+
+class PaginatedExpenses(BaseModel):
+    items: list[ExpenseOut]
+    total: int
+    page: int
+    size: int
+    model_config = {"from_attributes": True}

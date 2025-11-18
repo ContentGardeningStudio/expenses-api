@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from expenses_api.database import engine, Base
 from sqlalchemy.orm import Session
 from .deps import get_session
+from . import models
+from .routers import categories
 
 
 @asynccontextmanager
@@ -14,16 +16,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Expenses API", lifespan=lifespan)
 
+app.include_router(categories.router, prefix="/categories",
+                   tags=["Categories"])
+
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-
-@app.get("/debug-db")
-def debug_db(db: Session = Depends(get_session)):
-    try:
-        count = db.query(Category).count()
-        return {"db_connected": True, "categories": count}
-    except Exception as e:
-        return {"db_connected": False, "error": str(e)}
