@@ -30,7 +30,7 @@ expenses-api/ │
 ### 1️⃣ Clone the project
 
 ```bash
-git clone [https://github.com/TeamEnable/python-best-practices-free-training/](https://github.com/TeamEnable/python-best-practices-free-training/)
+git clone [https://github.com/ContentGardeningStudio/expenses-api ](https://github.com/ContentGardeningStudio/expenses-api )
 
 ```
 - Create a virtual environment using UV
