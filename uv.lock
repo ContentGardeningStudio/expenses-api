@@ -171,7 +171,11 @@ standard = [
 
 [[package]]
 name = "fastapi-cloud-cli"
+<<<<<<< HEAD
 version = "0.5.1"
+=======
+version = "0.4.0"
+>>>>>>> f4c4752 (Delete categories implemented and readme updated)
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastar" },
@@ -183,9 +187,15 @@ dependencies = [
     { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
 ]
+<<<<<<< HEAD
 sdist = { url = "https://files.pythonhosted.org/packages/cd/8d/cb1ae52121190eb75178b146652bfdce9296d2fd19aa30410ebb1fab3a63/fastapi_cloud_cli-0.5.1.tar.gz", hash = "sha256:5ed9591fda9ef5ed846c7fb937a06c491a00eef6d5bb656c84d82f47e500804b", size = 30746, upload-time = "2025-11-20T16:53:24.491Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/42/d6/b83f0801fd2c3f648e3696cdd2a1967b176f43c0c9db35c0350a67e7c141/fastapi_cloud_cli-0.5.1-py3-none-any.whl", hash = "sha256:1a28415b059b27af180a55a835ac2c9e924a66be88412d5649d4f91993d1a698", size = 23216, upload-time = "2025-11-20T16:53:23.119Z" },
+=======
+sdist = { url = "https://files.pythonhosted.org/packages/cb/7c/5e72b1a8f0828f45f00a51f3ec73ddeecc719c1fc5ee1367107c6c24c54f/fastapi_cloud_cli-0.4.0.tar.gz", hash = "sha256:335c6655d8c2c04f85282ffc70eb33b6dd9e220e89ebef9ff7ccedcb37f94e1d", size = 26005, upload-time = "2025-11-19T09:59:46.227Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/53/fb/33894cb2f10fff4794dca43992aaa4416a23c97e76247f4ce2e6ce761f6b/fastapi_cloud_cli-0.4.0-py3-none-any.whl", hash = "sha256:6c44bd0636e57fb9a156ff67f4c54f17b5fbb3d84c65ea9e2461d4daaf64d9e7", size = 20540, upload-time = "2025-11-19T09:59:44.87Z" },
+>>>>>>> f4c4752 (Delete categories implemented and readme updated)
 ]
 
 [[package]]
@@ -659,16 +669,26 @@ wheels = [
 
 [[package]]
 name = "rich-toolkit"
+<<<<<<< HEAD
 version = "0.16.0"
+=======
+version = "0.15.1"
+>>>>>>> f4c4752 (Delete categories implemented and readme updated)
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "rich" },
     { name = "typing-extensions" },
 ]
+<<<<<<< HEAD
 sdist = { url = "https://files.pythonhosted.org/packages/83/8e/ab512afd71d4e67bb611a57db92a0e967304c97ec61963e99103f5a88069/rich_toolkit-0.16.0.tar.gz", hash = "sha256:2f554b00b194776639f4d80f2706980756b659ceed9f345ebbd9de77d1bdd0f4", size = 183790, upload-time = "2025-11-19T15:26:11.431Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3a/04/f4bfb5d8a258d395d7fb6fbaa0e3fe7bafae17a2a3e2387e6dea9d6474df/rich_toolkit-0.16.0-py3-none-any.whl", hash = "sha256:3f4307f678c5c1e22c36d89ac05f1cd145ed7174f19c1ce5a4d3664ba77c0f9e", size = 29775, upload-time = "2025-11-19T15:26:10.336Z" },
+=======
+sdist = { url = "https://files.pythonhosted.org/packages/67/33/1a18839aaa8feef7983590c05c22c9c09d245ada6017d118325bbfcc7651/rich_toolkit-0.15.1.tar.gz", hash = "sha256:6f9630eb29f3843d19d48c3bd5706a086d36d62016687f9d0efa027ddc2dd08a", size = 115322, upload-time = "2025-09-04T09:28:11.789Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/49/42821d55ead7b5a87c8d121edf323cb393d8579f63e933002ade900b784f/rich_toolkit-0.15.1-py3-none-any.whl", hash = "sha256:36a0b1d9a135d26776e4b78f1d5c2655da6e0ef432380b5c6b523c8d8ab97478", size = 29412, upload-time = "2025-09-04T09:28:10.587Z" },
+>>>>>>> f4c4752 (Delete categories implemented and readme updated)
 ]
 
 [[package]]

@@ -6,7 +6,7 @@ from ..schemas import ExpenseCreate, ExpenseOut
 from ..repositories import create_expense, get_expense
 
 
-router = APIRouter(prefix="/expenses", tags=["expenses"])
+router = APIRouter(prefix="/expenses", tags=["Expenses"])
 
 
 @router.post("", response_model=ExpenseOut, status_code=status.HTTP_201_CREATED)
@@ -22,5 +22,5 @@ def post_expense(payload: ExpenseCreate, db: Session = Depends(get_session)):
 def get_one(expense_id: int, db: Session = Depends(get_session)):
     expense = get_expense(db, expense_id)
     if not expense:
-        raise HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=404, detail="Expense not found")
     return expense
