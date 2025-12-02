@@ -1,8 +1,8 @@
 # 📘 Expense API
 
-A simple and clean **FastAPI** backend for managing categories and expenses
+A simple and clean **FastAPI** backend for managing expenses.
 
-This project provides a minimal architecture with modular routing, ORM models, database session management, and Pydantic schemas for validation.
+This project provides a standard architecture with modular routing, ORM models, database session management, and Pydantic schemas for validation.
 
 ---
 ## 🚀 Features
@@ -158,5 +158,3 @@ Routers, models, and schemas
 🙌 Contributing
 
 Issues, feature ideas, and pull requests are welcome!
-
-This project is intentionally minimal so you can extend it as you like.
