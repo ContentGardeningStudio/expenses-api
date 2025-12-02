@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 
 expenses.db
+
+.expenses.db
 # C extensions
 *.so
 
