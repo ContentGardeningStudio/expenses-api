@@ -6,7 +6,7 @@ from decimal import Decimal
 import time
 
 from expenses_api import models
-from expenses_api import repositories
+from expenses_api import crud
 from expenses_api.database import Base
 
 # --- PYTEST FIXTURES FOR DB SETUP  ---
@@ -41,14 +41,14 @@ def db_session(engine: Engine):
 
 @pytest.fixture
 def test_category(db_session: Session) -> models.Category:
-    return repositories.create_category(db_session, name="Groceries")
+    return crud.create_category(db_session, name="Groceries")
 
 
 # --- TESTS FOR CATEGORY LOGIC  ---
 
 def test_create_category(db_session: Session):
     name = "Rent"
-    category = repositories.create_category(db_session, name=name)
+    category = crud.create_category(db_session, name=name)
 
     assert category.id is not None
     assert category.name == name
@@ -56,10 +56,10 @@ def test_create_category(db_session: Session):
 
 
 def test_list_categories_ordered(db_session: Session):
-    repositories.create_category(db_session, name="Categorie_A")
-    repositories.create_category(db_session, name="Categorie_B")
+    crud.create_category(db_session, name="Categorie_A")
+    crud.create_category(db_session, name="Categorie_B")
 
-    categories = repositories.list_categories(db_session)
+    categories = crud.list_categories(db_session)
 
     assert len(categories) == 2
     assert categories[0].name == "Categorie_A"
@@ -67,10 +67,10 @@ def test_list_categories_ordered(db_session: Session):
 
 
 def test_delete_category_success(db_session: Session):
-    category = repositories.create_category(db_session, name="ToDelete")
+    category = crud.create_category(db_session, name="ToDelete")
     category_id = category.id
 
-    repositories.delete_category(db_session, category_id)
+    crud.delete_category(db_session, category_id)
 
     deleted_category = db_session.get(models.Category, category_id)
     assert deleted_category is None
@@ -82,7 +82,7 @@ def test_create_expense_success(db_session: Session, test_category: models.Categ
     currency = "eur"
     name = "Dinner out"
 
-    expense = repositories.create_expense(
+    expense = crud.create_expense(
         db_session,
         category_id=test_category.id,
         amount=amount,
@@ -97,12 +97,12 @@ def test_create_expense_success(db_session: Session, test_category: models.Categ
 
 
 def test_get_expense_not_found(db_session: Session):
-    expense = repositories.get_expense(db_session, expense_id=999)
+    expense = crud.get_expense(db_session, expense_id=999)
     assert expense is None
 
 
 def test_update_expense_success(db_session: Session, test_category: models.Category):
-    expense = repositories.create_expense(
+    expense = crud.create_expense(
         db_session, category_id=test_category.id, amount=Decimal("10.00"),
         currency="USD"
     )
@@ -112,7 +112,7 @@ def test_update_expense_success(db_session: Session, test_category: models.Categ
     time.sleep(1.1)
 
     patch = {"amount": Decimal("15.00"), "name": "Updated Item"}
-    updated_expense = repositories.update_expense(
+    updated_expense = crud.update_expense(
         db_session,
         expense.id,
         patch,
@@ -125,7 +125,7 @@ def test_update_expense_success(db_session: Session, test_category: models.Categ
 
 
 def test_update_expense_optimistic_lock_failure(db_session: Session, test_category: models.Category):
-    expense = repositories.create_expense(
+    expense = crud.create_expense(
         db_session, category_id=test_category.id, amount=Decimal("10.00"),
         currency="USD"
     )
@@ -133,7 +133,7 @@ def test_update_expense_optimistic_lock_failure(db_session: Session, test_catego
     wrong_updated_at = expense.updated_at + timedelta(seconds=1)
 
     with pytest.raises(ValueError, match="conflict"):
-        repositories.update_expense(
+        crud.update_expense(
             db_session,
             expense.id,
             {"amount": Decimal("20.00")},
@@ -147,40 +147,40 @@ def test_list_expenses_with_filters(db_session: Session, test_category: models.C
     cat_id = test_category.id
 
     # Insert test data
-    repositories.create_expense(db_session, cat_id, Decimal("10.00"), "USD")
-    repositories.create_expense(db_session, cat_id, Decimal("50.00"), "USD")
-    repositories.create_expense(db_session, cat_id, Decimal("100.00"), "EUR")
+    crud.create_expense(db_session, cat_id, Decimal("10.00"), "USD")
+    crud.create_expense(db_session, cat_id, Decimal("50.00"), "USD")
+    crud.create_expense(db_session, cat_id, Decimal("100.00"), "EUR")
 
     # Test 1: No filters (should get all 3)
-    items, total = repositories.list_expenses(db_session)
+    items, total = crud.list_expenses(db_session)
     assert total == 3
     assert len(items) == 3
 
     # Test 2: Min amount filter (amount >= 50.00)
-    items, total = repositories.list_expenses(
+    items, total = crud.list_expenses(
         db_session, min_amount=Decimal("50.00"))
     assert total == 2
     assert len(items) == 2
     assert all(item.amount >= Decimal("50.00") for item in items)
 
     # Test 3: Category filter
-    items, total = repositories.list_expenses(
+    items, total = crud.list_expenses(
         db_session, category_id=cat_id + 1)
     assert total == 0
 
 
 def test_summary_by_category(db_session: Session, test_category: models.Category):
     cat_id = test_category.id
-    repositories.create_category(db_session, name="Transport")
-    transport_cat = repositories.list_categories(db_session)[1]
+    crud.create_category(db_session, name="Transport")
+    transport_cat = crud.list_categories(db_session)[1]
 
-    repositories.create_expense(db_session, cat_id, Decimal("10.00"), "USD")
-    repositories.create_expense(db_session, cat_id, Decimal("20.00"), "USD")
-    repositories.create_expense(db_session, cat_id, Decimal("50.00"), "EUR")
-    repositories.create_expense(
+    crud.create_expense(db_session, cat_id, Decimal("10.00"), "USD")
+    crud.create_expense(db_session, cat_id, Decimal("20.00"), "USD")
+    crud.create_expense(db_session, cat_id, Decimal("50.00"), "EUR")
+    crud.create_expense(
         db_session, transport_cat.id, Decimal("100.00"), "USD")
 
-    summary = repositories.summary_by_category(db_session)
+    summary = crud.summary_by_category(db_session)
 
     expected = [
         {'key': 'Groceries', 'currency': 'EUR',
