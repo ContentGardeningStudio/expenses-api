@@ -34,7 +34,7 @@ def delete_category(db: Session, category_id: int) -> None:
 # The implementation of the Expenses logic
 
 
-def create_expense(db: Session, category_id: int, amount: Decimal, currency: str, occurred_at: datetime, name: Optional[str] = None) -> Expense:
+def create_expense(db: Session, category_id: int, amount: Decimal, currency: str, name: Optional[str] = None) -> Expense:
     expense = Expense(category_id=category_id, amount=amount,
                       currency=currency.upper(), name=name)
     db.add(expense)
@@ -93,6 +93,14 @@ def summary_by_category(db: Session):
 
 
 def summary_by_month(db: Session):
-    q = text("SELECT strftime('%Y-%m', occurred_at) AS key, currency, SUM(amount) AS total_amount FROM expenses GROUP BY key, currency")
+    q = text("""
+        SELECT
+            strftime('%Y-%m', created_at) AS key, 
+            currency,
+            SUM(amount) AS total_amount
+        FROM expenses
+        GROUP BY key, currency
+        ORDER BY key DESC
+    """)
     rows = db.execute(q).all()
     return [dict(r._mapping) for r in rows]
