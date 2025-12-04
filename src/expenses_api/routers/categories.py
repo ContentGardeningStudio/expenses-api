@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..schemas import CategoryCreate, CategoryOut
 from ..deps import get_session
-from ..repositories import create_category, list_categories, delete_category
+from ..crud import create_category, list_categories, delete_category
 from expenses_api import models
 
 router = APIRouter(prefix="/categories", tags=["Categories"])

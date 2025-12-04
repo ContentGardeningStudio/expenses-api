@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from decimal import Decimal
 from ..deps import get_session
 from ..schemas import ExpenseCreate, ExpenseOut, PaginatedExpenses
-from ..repositories import create_expense, get_expense, list_expenses
+from ..crud import create_expense, get_expense, list_expenses
 
 
 router = APIRouter(prefix="/expenses", tags=["Expenses"])
