@@ -1,8 +1,17 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Numeric, func
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Numeric, func, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import expression
 from .database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    is_active = Column(
+        Boolean, server_default=expression.true(), nullable=False)
 
 
 class Category(Base):

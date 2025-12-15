@@ -4,7 +4,7 @@ from expenses_api.database import engine, Base
 from sqlalchemy.orm import Session
 from .deps import get_session
 from . import models
-from .routers import categories, expenses
+from .routers import categories, expenses, auth
 
 
 @asynccontextmanager
@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Expenses API", lifespan=lifespan)
 
+app.include_router(auth.router)
 app.include_router(categories.router)
 app.include_router(expenses.router)
 

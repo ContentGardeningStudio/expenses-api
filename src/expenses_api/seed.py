@@ -41,7 +41,6 @@ def seed_faker():
     expenses = []
     for _ in range(200):
         amount = round(random.uniform(5, 500), 2)
-        occurred_at = datetime.now() - timedelta(days=random.randint(0, 365))
 
         expenses.append(
             Expense(

@@ -18,18 +18,25 @@ This project provides a standard architecture with modular routing, ORM models, 
 ## 📂 Project Structure
 
 expenses-api/ │ 
-              ├── pyproject.toml 
-              ├── README.md 
-              │ └── src/expenses_api/ 
-                    ├── main.py 
-                    ├── deps.py 
-                    ├── database.py 
-                    ├── models.py 
-                    ├── schemas.py 
-                    ├── routers/ 
-                    │ ├── categories.py 
-                    │ └── expenses.py 
-                    └── init.py
+            ├── pyproject.toml 
+            ├── README.md 
+            ├── src/
+            │   └── expenses_api/
+            │       ├── __init__.py
+            │       ├── main.py             # Main FastAPI application entry point
+            │       ├── database.py         # SQLAlchemy engine and session setup
+            │       ├── models.py           # SQLAlchemy declarative base models (Category, Expense)
+            │       ├── settings.py         # Pydantic-based configuration management
+            │       ├── deps.py             # Database dependency injector (get_session)
+            │       ├── schemas.py          # Pydantic request/response schemas
+            │       ├── repositories.py     # Core database interaction (CRUD, Summaries)
+            │       ├── routers/
+            │       │   ├── categories.py   # Category API endpoints
+            │       │   └── expenses.py     # Expense API endpoints
+            │       └── seed.py             # Optional script for populating data
+            └── tests/
+            ├── test_repositories.py    
+            └── test_routers.py         
 
 
 ---

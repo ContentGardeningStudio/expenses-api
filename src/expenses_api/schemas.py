@@ -3,6 +3,27 @@ from datetime import datetime
 from typing import Optional
 
 
+class UserBase(BaseModel):
+    username: constr(strip_whitespace=True, min_length=3)
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class UserOut(UserBase):
+    id: int
+    is_active: bool
+    model_config = {"from_attributes": True}
+
+# --- NEW TOKEN SCHEMAS ---
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class CategoryCreate(BaseModel):
     name: constr(strip_whitespace=True, min_length=1, max_length=100)
 

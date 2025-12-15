@@ -29,8 +29,7 @@ def delete_category(db: Session, category_id: int) -> None:
         return None
     db.delete(category)
     db.commit()
-    return None
-
+    return f"Category {category_id} deleted successfully!"
 # The implementation of the Expenses logic
 
 
