@@ -12,78 +12,51 @@ from expenses_api.database import Base
 # --- PYTEST FIXTURES FOR DB SETUP  ---
 
 
-@pytest.fixture(scope="module")
-def engine():
-    return create_engine("sqlite:///:memory:")
-
-
-@pytest.fixture(scope="module", autouse=True)
-def setup_db(engine: Engine):
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
-
-
 @pytest.fixture
-def db_session(engine: Engine):
-    connection = engine.connect()
-    transaction = connection.begin()
-
-    SessionLocal = sessionmaker(bind=connection)
-    session = SessionLocal()
-
-    yield session
-
-    session.close()
-    transaction.rollback()
-    connection.close()
-
-
-@pytest.fixture
-def test_category(db_session: Session) -> models.Category:
-    return crud.create_category(db_session, name="Groceries")
+def test_category(db: Session) -> models.Category:
+    return crud.create_category(db, name="Groceries")
 
 
 # --- TESTS FOR CATEGORY LOGIC  ---
 
-def test_create_category(db_session: Session):
+def test_create_category(db):
     name = "Rent"
-    category = crud.create_category(db_session, name=name)
+    category = crud.create_category(db, name=name)
 
     assert category.id is not None
     assert category.name == name
     assert isinstance(category.created_at, datetime)
 
 
-def test_list_categories_ordered(db_session: Session):
-    crud.create_category(db_session, name="Categorie_A")
-    crud.create_category(db_session, name="Categorie_B")
+def test_list_categories_ordered(db):
+    crud.create_category(db, name="Categorie_A")
+    crud.create_category(db, name="Categorie_B")
 
-    categories = crud.list_categories(db_session)
+    categories = crud.list_categories(db)
 
     assert len(categories) == 2
     assert categories[0].name == "Categorie_A"
     assert categories[1].name == "Categorie_B"
 
 
-def test_delete_category_success(db_session: Session):
-    category = crud.create_category(db_session, name="ToDelete")
+def test_delete_category_success(db: Session):
+    category = crud.create_category(db, name="ToDelete")
     category_id = category.id
 
-    crud.delete_category(db_session, category_id)
+    crud.delete_category(db, category_id)
 
-    deleted_category = db_session.get(models.Category, category_id)
+    deleted_category = db.get(models.Category, category_id)
     assert deleted_category is None
 
 
 # --- TESTS FOR EXPENSE CRUD LOGIC ---
-def test_create_expense_success(db_session: Session, test_category: models.Category):
+def test_create_expense_success(db: Session, test_category: models.Category):
     amount = Decimal("100.50")
     currency = "eur"
     name = "Dinner out"
 
     expense = crud.create_expense(
-        db_session,
+        db,
         category_id=test_category.id,
         amount=amount,
         currency=currency,
@@ -96,24 +69,24 @@ def test_create_expense_success(db_session: Session, test_category: models.Categ
     assert expense.name == name
 
 
-def test_get_expense_not_found(db_session: Session):
-    expense = crud.get_expense(db_session, expense_id=999)
+def test_get_expense_not_found(db: Session):
+    expense = crud.get_expense(db, expense_id=999)
     assert expense is None
 
 
-def test_update_expense_success(db_session: Session, test_category: models.Category):
+def test_update_expense_success(db: Session, test_category: models.Category):
     expense = crud.create_expense(
-        db_session, category_id=test_category.id, amount=Decimal("10.00"),
+        db, category_id=test_category.id, amount=Decimal("10.00"),
         currency="USD"
     )
-    db_session.refresh(expense)
+    db.refresh(expense)
     original_updated_at = expense.updated_at
 
     time.sleep(1.1)
 
     patch = {"amount": Decimal("15.00"), "name": "Updated Item"}
     updated_expense = crud.update_expense(
-        db_session,
+        db,
         expense.id,
         patch,
         expected_updated_at=original_updated_at
@@ -124,9 +97,9 @@ def test_update_expense_success(db_session: Session, test_category: models.Categ
     assert updated_expense.updated_at > original_updated_at
 
 
-def test_update_expense_optimistic_lock_failure(db_session: Session, test_category: models.Category):
+def test_update_expense_optimistic_lock_failure(db: Session, test_category: models.Category):
     expense = crud.create_expense(
-        db_session, category_id=test_category.id, amount=Decimal("10.00"),
+        db, category_id=test_category.id, amount=Decimal("10.00"),
         currency="USD"
     )
 
@@ -134,7 +107,7 @@ def test_update_expense_optimistic_lock_failure(db_session: Session, test_catego
 
     with pytest.raises(ValueError, match="conflict"):
         crud.update_expense(
-            db_session,
+            db,
             expense.id,
             {"amount": Decimal("20.00")},
             expected_updated_at=wrong_updated_at
@@ -143,44 +116,44 @@ def test_update_expense_optimistic_lock_failure(db_session: Session, test_catego
 # --- TESTS FOR QUERY & SUMMARY LOGIC ---
 
 
-def test_list_expenses_with_filters(db_session: Session, test_category: models.Category):
+def test_list_expenses_with_filters(db: Session, test_category: models.Category):
     cat_id = test_category.id
 
     # Insert test data
-    crud.create_expense(db_session, cat_id, Decimal("10.00"), "USD")
-    crud.create_expense(db_session, cat_id, Decimal("50.00"), "USD")
-    crud.create_expense(db_session, cat_id, Decimal("100.00"), "EUR")
+    crud.create_expense(db, cat_id, Decimal("10.00"), "USD")
+    crud.create_expense(db, cat_id, Decimal("50.00"), "USD")
+    crud.create_expense(db, cat_id, Decimal("100.00"), "EUR")
 
     # Test 1: No filters (should get all 3)
-    items, total = crud.list_expenses(db_session)
+    items, total = crud.list_expenses(db)
     assert total == 3
     assert len(items) == 3
 
     # Test 2: Min amount filter (amount >= 50.00)
     items, total = crud.list_expenses(
-        db_session, min_amount=Decimal("50.00"))
+        db, min_amount=Decimal("50.00"))
     assert total == 2
     assert len(items) == 2
     assert all(item.amount >= Decimal("50.00") for item in items)
 
     # Test 3: Category filter
     items, total = crud.list_expenses(
-        db_session, category_id=cat_id + 1)
+        db, category_id=cat_id + 1)
     assert total == 0
 
 
-def test_summary_by_category(db_session: Session, test_category: models.Category):
+def test_summary_by_category(db: Session, test_category: models.Category):
     cat_id = test_category.id
-    crud.create_category(db_session, name="Transport")
-    transport_cat = crud.list_categories(db_session)[1]
+    crud.create_category(db, name="Transport")
+    transport_cat = crud.list_categories(db)[1]
 
-    crud.create_expense(db_session, cat_id, Decimal("10.00"), "USD")
-    crud.create_expense(db_session, cat_id, Decimal("20.00"), "USD")
-    crud.create_expense(db_session, cat_id, Decimal("50.00"), "EUR")
+    crud.create_expense(db, cat_id, Decimal("10.00"), "USD")
+    crud.create_expense(db, cat_id, Decimal("20.00"), "USD")
+    crud.create_expense(db, cat_id, Decimal("50.00"), "EUR")
     crud.create_expense(
-        db_session, transport_cat.id, Decimal("100.00"), "USD")
+        db, transport_cat.id, Decimal("100.00"), "USD")
 
-    summary = crud.summary_by_category(db_session)
+    summary = crud.summary_by_category(db)
 
     expected = [
         {'key': 'Groceries', 'currency': 'EUR',
