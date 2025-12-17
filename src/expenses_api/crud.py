@@ -30,12 +30,21 @@ def delete_category(db: Session, category_id: int) -> None:
     db.delete(category)
     db.commit()
     return f"Category {category_id} deleted successfully!"
+
+
 # The implementation of the Expenses logic
 
 
-def create_expense(db: Session, category_id: int, amount: Decimal, currency: str, name: Optional[str] = None) -> Expense:
-    expense = Expense(category_id=category_id, amount=amount,
-                      currency=currency.upper(), name=name)
+def create_expense(
+    db: Session,
+    category_id: int,
+    amount: Decimal,
+    currency: str,
+    name: Optional[str] = None,
+) -> Expense:
+    expense = Expense(
+        category_id=category_id, amount=amount, currency=currency.upper(), name=name
+    )
     db.add(expense)
     db.commit()
     db.refresh(expense)
@@ -55,13 +64,20 @@ def delete_expense(db: Session, expense_id: int) -> None:
     return None
 
 
-def update_expense(db: Session, expense_id: int, patch: dict, expected_updated_at: Optional[datetime] = None) -> Expense:
+def update_expense(
+    db: Session,
+    expense_id: int,
+    patch: dict,
+    expected_updated_at: Optional[datetime] = None,
+) -> Expense:
     exp = db.get(Expense, expense_id)
     if not exp:
         return None
     # optimistic concurrency
     if expected_updated_at is not None:
-        if exp.updated_at is None or exp.updated_at.replace(tzinfo=None) != expected_updated_at.replace(tzinfo=None):
+        if exp.updated_at is None or exp.updated_at.replace(
+            tzinfo=None
+        ) != expected_updated_at.replace(tzinfo=None):
             raise ValueError("conflict")
     for k, v in patch.items():
         setattr(exp, k, v)
@@ -70,7 +86,16 @@ def update_expense(db: Session, expense_id: int, patch: dict, expected_updated_a
     return exp
 
 
-def list_expenses(db: Session, page: int = 1, size: int = 50, from_dt: Optional[datetime] = None, to_dt: Optional[datetime] = None, category_id: Optional[int] = None, min_amount: Optional[Decimal] = None, max_amount: Optional[Decimal] = None) -> Tuple[List[Expense], int]:
+def list_expenses(
+    db: Session,
+    page: int = 1,
+    size: int = 50,
+    from_dt: Optional[datetime] = None,
+    to_dt: Optional[datetime] = None,
+    category_id: Optional[int] = None,
+    min_amount: Optional[Decimal] = None,
+    max_amount: Optional[Decimal] = None,
+) -> Tuple[List[Expense], int]:
     q = select(Expense)
     if category_id:
         q = q.where(Expense.category_id == category_id)
@@ -79,15 +104,21 @@ def list_expenses(db: Session, page: int = 1, size: int = 50, from_dt: Optional[
     if max_amount:
         q = q.where(Expense.amount <= max_amount)
 
-    total = db.execute(select(func.count()).select_from(
-        q.subquery())).scalar_one()
+    total = db.execute(select(func.count()).select_from(q.subquery())).scalar_one()
     items = db.execute(q).scalars().all()
     return items, total
 
 
 def summary_by_category(db: Session):
-    q = select(models.Category.name.label("key"), Expense.currency, func.sum(Expense.amount).label("total_amount")).join(
-        Expense, Expense.category_id == Category.id).group_by(models.Category.name, Expense.currency)
+    q = (
+        select(
+            models.Category.name.label("key"),
+            Expense.currency,
+            func.sum(Expense.amount).label("total_amount"),
+        )
+        .join(Expense, Expense.category_id == Category.id)
+        .group_by(models.Category.name, Expense.currency)
+    )
     return [dict(r._mapping) for r in db.execute(q).all()]
 
 

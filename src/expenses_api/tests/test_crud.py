@@ -19,6 +19,7 @@ def test_category(db: Session) -> models.Category:
 
 # --- TESTS FOR CATEGORY LOGIC  ---
 
+
 def test_create_category(db):
     name = "Rent"
     category = crud.create_category(db, name=name)
@@ -56,11 +57,7 @@ def test_create_expense_success(db: Session, test_category: models.Category):
     name = "Dinner out"
 
     expense = crud.create_expense(
-        db,
-        category_id=test_category.id,
-        amount=amount,
-        currency=currency,
-        name=name
+        db, category_id=test_category.id, amount=amount, currency=currency, name=name
     )
 
     assert expense.id is not None
@@ -76,8 +73,7 @@ def test_get_expense_not_found(db: Session):
 
 def test_update_expense_success(db: Session, test_category: models.Category):
     expense = crud.create_expense(
-        db, category_id=test_category.id, amount=Decimal("10.00"),
-        currency="USD"
+        db, category_id=test_category.id, amount=Decimal("10.00"), currency="USD"
     )
     db.refresh(expense)
     original_updated_at = expense.updated_at
@@ -86,10 +82,7 @@ def test_update_expense_success(db: Session, test_category: models.Category):
 
     patch = {"amount": Decimal("15.00"), "name": "Updated Item"}
     updated_expense = crud.update_expense(
-        db,
-        expense.id,
-        patch,
-        expected_updated_at=original_updated_at
+        db, expense.id, patch, expected_updated_at=original_updated_at
     )
 
     assert updated_expense.amount == Decimal("15.00")
@@ -97,10 +90,11 @@ def test_update_expense_success(db: Session, test_category: models.Category):
     assert updated_expense.updated_at > original_updated_at
 
 
-def test_update_expense_optimistic_lock_failure(db: Session, test_category: models.Category):
+def test_update_expense_optimistic_lock_failure(
+    db: Session, test_category: models.Category
+):
     expense = crud.create_expense(
-        db, category_id=test_category.id, amount=Decimal("10.00"),
-        currency="USD"
+        db, category_id=test_category.id, amount=Decimal("10.00"), currency="USD"
     )
 
     wrong_updated_at = expense.updated_at + timedelta(seconds=1)
@@ -110,8 +104,9 @@ def test_update_expense_optimistic_lock_failure(db: Session, test_category: mode
             db,
             expense.id,
             {"amount": Decimal("20.00")},
-            expected_updated_at=wrong_updated_at
+            expected_updated_at=wrong_updated_at,
         )
+
 
 # --- TESTS FOR QUERY & SUMMARY LOGIC ---
 
@@ -130,15 +125,13 @@ def test_list_expenses_with_filters(db: Session, test_category: models.Category)
     assert len(items) == 3
 
     # Test 2: Min amount filter (amount >= 50.00)
-    items, total = crud.list_expenses(
-        db, min_amount=Decimal("50.00"))
+    items, total = crud.list_expenses(db, min_amount=Decimal("50.00"))
     assert total == 2
     assert len(items) == 2
     assert all(item.amount >= Decimal("50.00") for item in items)
 
     # Test 3: Category filter
-    items, total = crud.list_expenses(
-        db, category_id=cat_id + 1)
+    items, total = crud.list_expenses(db, category_id=cat_id + 1)
     assert total == 0
 
 
@@ -150,21 +143,17 @@ def test_summary_by_category(db: Session, test_category: models.Category):
     crud.create_expense(db, cat_id, Decimal("10.00"), "USD")
     crud.create_expense(db, cat_id, Decimal("20.00"), "USD")
     crud.create_expense(db, cat_id, Decimal("50.00"), "EUR")
-    crud.create_expense(
-        db, transport_cat.id, Decimal("100.00"), "USD")
+    crud.create_expense(db, transport_cat.id, Decimal("100.00"), "USD")
 
     summary = crud.summary_by_category(db)
 
     expected = [
-        {'key': 'Groceries', 'currency': 'EUR',
-            'total_amount': Decimal('50.00')},
-        {'key': 'Groceries', 'currency': 'USD',
-            'total_amount': Decimal('30.00')},
-        {'key': 'Transport', 'currency': 'USD',
-            'total_amount': Decimal('100.00')}
+        {"key": "Groceries", "currency": "EUR", "total_amount": Decimal("50.00")},
+        {"key": "Groceries", "currency": "USD", "total_amount": Decimal("30.00")},
+        {"key": "Transport", "currency": "USD", "total_amount": Decimal("100.00")},
     ]
 
     def sort_key(d):
-        return (d['key'], d['currency'])
+        return (d["key"], d["currency"])
 
     assert sorted(summary, key=sort_key) == sorted(expected, key=sort_key)

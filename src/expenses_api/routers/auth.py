@@ -6,11 +6,7 @@ from sqlalchemy.orm import Session
 from ..deps import get_session
 from ..schemas import Token, UserCreate, UserOut
 from ..models import User
-from ..security import (
-    get_password_hash,
-    verify_password,
-    create_access_token
-)
+from ..security import get_password_hash, verify_password, create_access_token
 from ..settings import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -20,8 +16,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 def register_user(payload: UserCreate, db: Session = Depends(get_session)):
     # 1. Check if user already exists
     if db.query(User).filter(User.username == payload.username).first():
-        raise HTTPException(
-            status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail="Username already registered")
 
     # 2. Hash password and create user
     hashed_password = get_password_hash(payload.password)
@@ -34,8 +29,7 @@ def register_user(payload: UserCreate, db: Session = Depends(get_session)):
 
 @router.post("/token", response_model=Token)
 def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_session)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_session)
 ):
     # 1. Fetch user
     user = db.query(User).filter(User.username == form_data.username).first()
@@ -55,8 +49,7 @@ def login_for_access_token(
         )
 
     # 3. Create token
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )

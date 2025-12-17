@@ -16,6 +16,7 @@ class UserOut(UserBase):
     is_active: bool
     model_config = {"from_attributes": True}
 
+
 # --- NEW TOKEN SCHEMAS ---
 
 

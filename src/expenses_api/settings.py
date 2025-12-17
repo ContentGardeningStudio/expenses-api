@@ -10,10 +10,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    model_config = ConfigDict(
-        env_file=".env",
-        extra="ignore"
-    )
+    model_config = ConfigDict(env_file=".env", extra="ignore")
 
 
 settings = Settings()

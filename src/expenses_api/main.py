@@ -14,6 +14,7 @@ async def lifespan(app: FastAPI):
     yield
     print("Application shutting down.")
 
+
 app = FastAPI(title="Expenses API", lifespan=lifespan)
 
 app.include_router(auth.router)

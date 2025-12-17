@@ -14,7 +14,6 @@ CURRENCIES = ["USD", "EUR"]
 
 
 def seed_faker():
-
     db: Session = SessionLocal()
 
     print("Clearing existing data...")
@@ -23,9 +22,7 @@ def seed_faker():
     db.commit()
 
     print("Creating categories...")
-    category_names = [
-        fake.word().capitalize() for _ in range(15)
-    ]
+    category_names = [fake.word().capitalize() for _ in range(15)]
 
     categories = [Category(name=name) for name in category_names]
 
@@ -47,7 +44,7 @@ def seed_faker():
                 amount=Decimal(str(amount)),
                 currency=random.choice(CURRENCIES),
                 name=fake.sentence(nb_words=8),
-                category_id=random.choice(category_ids)
+                category_id=random.choice(category_ids),
             )
         )
 
