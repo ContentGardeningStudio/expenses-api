@@ -72,4 +72,4 @@ def test_user(db):
 
 @pytest.fixture
 def test_category(db) -> models.Category:
-    return crud.create_category(db_session, name="Groceries")
+    return crud.create_category(db, name="Groceries")

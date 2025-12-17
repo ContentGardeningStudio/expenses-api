@@ -1,13 +1,11 @@
 import pytest
-from sqlalchemy import Engine, create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from decimal import Decimal
 import time
 
 from expenses_api import models
 from expenses_api import crud
-from expenses_api.database import Base
 
 # --- PYTEST FIXTURES FOR DB SETUP  ---
 

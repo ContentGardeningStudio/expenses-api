@@ -1,14 +1,6 @@
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from decimal import Decimal
 
-from expenses_api.main import app
-from expenses_api.database import Base
-from expenses_api.deps import get_session
-from expenses_api.models import User
-from expenses_api.security import get_password_hash
 from expenses_api import crud
 
 # ============= CONFIGURATION TEST DATABASE =============

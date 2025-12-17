@@ -1,7 +1,6 @@
 from faker import Faker
 from decimal import Decimal
 import random
-from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 

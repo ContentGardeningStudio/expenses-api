@@ -1,9 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from expenses_api.database import engine, Base
-from sqlalchemy.orm import Session
-from .deps import get_session
-from . import models
 from .routers import categories, expenses, auth
 
 

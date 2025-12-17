@@ -9,7 +9,6 @@ from sqlalchemy import (
     Boolean,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from sqlalchemy.sql import expression
 from .database import Base
 
